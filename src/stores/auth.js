@@ -7,6 +7,7 @@ export const useAuthStore = defineStore("authStore", () => {
   const user = ref(null);
   const token = ref(null);
   const errors = ref({});
+  const errormsg = ref({});
 
   const isLoggedIn = computed(() => !!user.value);
 
@@ -29,6 +30,7 @@ export const useAuthStore = defineStore("authStore", () => {
     } catch (error) {
       token.value = null;
       if (error.response && error.response.status === 422) {
+        errormsg.value = error.response.data.message;
         errors.value = error.response.data.errors;
       }
     }
@@ -46,6 +48,7 @@ export const useAuthStore = defineStore("authStore", () => {
     user,
     token,
     errors,
+    errormsg,
     isLoggedIn,
     fetchUser,
     handleLogin,

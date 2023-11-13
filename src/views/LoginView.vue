@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { mdiAccount, mdiAsterisk } from '@mdi/js'
+import { mdiAccount, mdiAsterisk, mdiAlertCircle } from '@mdi/js'
 import SectionFullScreen from '@/components/SectionFullScreen.vue'
 import CardBox from '@/components/CardBox.vue'
 import FormCheckRadio from '@/components/FormCheckRadio.vue'
@@ -10,15 +10,15 @@ import FormControl from '@/components/FormControl.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import LayoutGuest from '@/layouts/LayoutGuest.vue'
+import NotificationBar from '@/components/NotificationBar.vue'
 import { useAuthStore } from "../stores/auth";
 import { storeToRefs } from "pinia";
 
 
 const store = useAuthStore()
-const { isLoggedIn, errors, fetchUser } = storeToRefs(store)
+const { isLoggedIn, errors, errormsg, fetchUser } = storeToRefs(store)
 const { handleLogin } = store
-
-
+let errorNotification = ref(false)
 
 
 const form = reactive({
@@ -64,7 +64,9 @@ const submit = async () => {
   }
 
   await handleLogin(form)
-  
+  if(errormsg.value){
+    errorNotification.value = true;
+  }
   if (isLoggedIn.value) {
       router.push({ name: 'dashboard' })
   }
@@ -74,7 +76,11 @@ const submit = async () => {
 <template>
   <LayoutGuest>
     <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
+    
       <CardBox :class="cardClass" is-form @submit.prevent="submit">
+        <NotificationBar v-if="errorNotification" color="danger" :outline="false" @dismiss-notification="()=>errorNotification=false">
+          {{ errormsg }}
+        </NotificationBar>
         <FormField label="Login" :help="error.email?'Please enter valid email':'Please enter your email'" :error="error.email">
           <FormControl
             v-model="form.email"

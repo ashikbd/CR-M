@@ -18,14 +18,17 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['dismissNotification']);
+
 const componentClass = computed(() =>
   props.outline ? colorsOutline[props.color] : colorsBgLight[props.color]
 )
 
-const isDismissed = ref(false)
+//const isDismissed = ref(false)
 
 const dismiss = () => {
-  isDismissed.value = true
+  emit('dismissNotification')
+  //isDismissed.value = true
 }
 
 const slots = useSlots()
@@ -35,7 +38,6 @@ const hasRightSlot = computed(() => slots.right)
 
 <template>
   <div
-    v-if="!isDismissed"
     :class="componentClass"
     class="px-3 py-6 md:py-3 mb-6 last:mb-0 border rounded-lg transition-colors duration-150"
   >
